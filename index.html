@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수업 고민 나누기 · 광주하남중등수학연구회</title>
+<meta name="description" content="광주하남중등수학연구회 수업 고민을 익명으로 나누는 보드">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef3f8;
+    --bg-pattern: #dfe8f1;
+    --ink: #1f2933;
+    --muted: #66758a;
+    --line: rgba(31, 41, 51, .12);
+    --surface: #ffffff;
+    --accent: #2563eb;
+    --accent-ink: #ffffff;
+    --danger: #c2410c;
+    --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 4px 14px rgba(15, 23, 42, .08);
+    --c1: #fff4b8; --c2: #d9f2e1; --c3: #dbe8ff; --c4: #ffe0e6; --c5: #efe3ff; --c6: #ffe7cc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141a22; --bg-pattern: #1b232d; --ink: #e6ebf1; --muted: #9aa7b6;
+      --line: rgba(230, 235, 241, .14); --surface: #1e2632; --accent: #60a5fa; --accent-ink: #0b1220;
+      --danger: #fb923c; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.35);
+      --c1: #3d3820; --c2: #1f3a2b; --c3: #1f2e4a; --c4: #43262d; --c5: #33284a; --c6: #43321e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141a22; --bg-pattern: #1b232d; --ink: #e6ebf1; --muted: #9aa7b6;
+    --line: rgba(230, 235, 241, .14); --surface: #1e2632; --accent: #60a5fa; --accent-ink: #0b1220;
+    --danger: #fb923c; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.35);
+    --c1: #3d3820; --c2: #1f3a2b; --c3: #1f2e4a; --c4: #43262d; --c5: #33284a; --c6: #43321e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+    color: var(--ink);
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--bg-pattern) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+  header {
+    padding: 28px 16px 12px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .org { font-size: 14px; color: var(--muted); margin: 0 0 2px; font-weight: 500; }
+  h1 { font-size: clamp(24px, 4vw, 34px); margin: 0; letter-spacing: -.02em; }
+  .sub { color: var(--muted); margin: 6px 0 0; font-size: 15px; }
+  .status { font-size: 13px; color: var(--muted); margin-top: 10px; min-height: 1.4em; }
+  .admin-badge { display: inline-block; background: var(--danger); color: #fff; font-size: 12px; padding: 1px 8px; border-radius: 999px; margin-left: 6px; }
+
+  main { max-width: 1400px; margin: 0 auto; padding: 8px 16px 120px; }
+  .wall { columns: 280px; column-gap: 16px; }
+  .card {
+    break-inside: avoid; margin: 0 0 16px; display: block; width: 100%;
+    text-align: left; font: inherit; color: inherit; border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 16px 12px; box-shadow: var(--shadow); cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .card .who { font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; gap: 8px; }
+  .card .when { font-weight: 400; color: var(--muted); }
+  .card .body { white-space: pre-wrap; word-break: break-word; margin: 8px 0 10px; font-size: 15px;
+    display: -webkit-box; -webkit-line-clamp: 12; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .foot { font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; }
+  .empty { text-align: center; color: var(--muted); padding: 60px 16px; }
+
+  .fab {
+    position: fixed; right: 20px; bottom: 20px; z-index: 5;
+    background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 999px;
+    padding: 14px 22px; font: inherit; font-weight: 700; font-size: 16px; box-shadow: var(--shadow); cursor: pointer;
+  }
+  .fab:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+  dialog {
+    border: 0; border-radius: 16px; padding: 0; width: min(640px, calc(100vw - 32px));
+    max-height: calc(100vh - 40px); background: var(--surface); color: var(--ink); box-shadow: var(--shadow);
+  }
+  dialog::backdrop { background: rgba(10, 15, 25, .5); }
+  .dlg { padding: 20px; }
+  .dlg h2 { margin: 0 0 12px; font-size: 19px; }
+  .row { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  input, textarea {
+    width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 12px;
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  .btn { font: inherit; border-radius: 10px; padding: 9px 16px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 700; }
+  .btn.danger { color: var(--danger); border-color: currentColor; }
+  .btn.small { padding: 4px 10px; font-size: 13px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .hint { font-size: 12px; color: var(--muted); }
+  .err { color: var(--danger); font-size: 13px; min-height: 1.2em; margin-top: 6px; }
+
+  .detail-post { border-radius: 12px; padding: 14px 16px; border: 1px solid var(--line); }
+  .detail-post .body { white-space: pre-wrap; word-break: break-word; margin-top: 6px; }
+  .comments { margin: 16px 0 0; padding: 0; list-style: none; }
+  .comments li { border-bottom: 1px solid var(--line); padding: 10px 0; }
+  .comments .meta { font-size: 13px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .comments .meta b { font-weight: 700; }
+  .comments .meta span { color: var(--muted); }
+  .comments .text { white-space: pre-wrap; word-break: break-word; font-size: 15px; }
+  .comment-form textarea { min-height: 80px; }
+  .close-x { background: none; border: 0; font-size: 22px; color: var(--muted); cursor: pointer; line-height: 1; padding: 4px 8px; }
+
+  header { position: relative; }
+  .admin-link {
+    position: absolute; top: 10px; right: 16px; background: none; border: 0; padding: 4px;
+    color: var(--muted); opacity: .45; font: inherit; font-size: 12px; cursor: pointer;
+  }
+  .admin-link:hover, .admin-link:focus-visible { opacity: 1; }
+  @media (max-width: 480px) {
+    .fab { right: 16px; bottom: 16px; padding: 12px 18px; }
+    .dlg { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <button type="button" class="admin-link" id="adminBtn">관리자</button>
+  <p class="org">광주하남중등수학연구회</p>
+  <h1>수업 고민 나누기</h1>
+  <p class="sub">수업하며 생긴 고민을 편하게 남겨 주세요. 이름 없이 올릴 수 있고, 다른 선생님들이 댓글로 함께 생각을 보탭니다.</p>
+  <div class="status" id="status" aria-live="polite">불러오는 중…</div>
+</header>
+
+<main>
+  <div class="empty" id="empty" hidden>아직 올라온 고민이 없어요. 첫 고민을 올려 주세요!</div>
+  <div class="wall" id="wall"></div>
+</main>
+
+<button class="fab" id="newBtn" type="button">＋ 고민 올리기</button>
+
+<dialog id="newDlg">
+  <form class="dlg" id="newForm" method="dialog">
+    <div class="row"><h2>고민 올리기</h2><button class="close-x" type="button" data-close aria-label="닫기">×</button></div>
+    <label for="newNick">별명 (비워 두면 익명)</label>
+    <input id="newNick" maxlength="30" placeholder="예: 중2 담당">
+    <label for="newContent">고민 내용</label>
+    <textarea id="newContent" maxlength="2000" required placeholder="예: 함수 단원 도입을 어떻게 하면 학생들이 덜 어려워할까요?"></textarea>
+    <div class="hint">개인정보(학생 이름 등)는 적지 말아 주세요. 올린 글은 이 기기에서만 직접 지울 수 있어요.</div>
+    <div class="err" id="newErr"></div>
+    <div class="actions">
+      <button class="btn" type="button" data-close>취소</button>
+      <button class="btn primary" type="submit" id="newSubmit">올리기</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="detailDlg">
+  <div class="dlg">
+    <div class="row"><h2>고민</h2><button class="close-x" type="button" data-close aria-label="닫기">×</button></div>
+    <div class="detail-post" id="detailPost"></div>
+    <ul class="comments" id="commentList"></ul>
+    <form class="comment-form" id="commentForm">
+      <label for="cNick">별명 (비워 두면 익명)</label>
+      <input id="cNick" maxlength="30">
+      <label for="cContent">댓글</label>
+      <textarea id="cContent" maxlength="1000" required placeholder="생각이나 경험을 나눠 주세요"></textarea>
+      <div class="err" id="cErr"></div>
+      <div class="actions"><button class="btn primary" type="submit" id="cSubmit">댓글 달기</button></div>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="adminDlg">
+  <form class="dlg" id="adminForm">
+    <div class="row"><h2>관리자 모드</h2><button class="close-x" type="button" data-close aria-label="닫기">×</button></div>
+    <label for="adminPw">관리자 비밀번호</label>
+    <input id="adminPw" type="password" autocomplete="current-password">
+    <div class="err" id="adminErr"></div>
+    <div class="actions">
+      <button class="btn" type="button" data-close>취소</button>
+      <button class="btn primary" type="submit">들어가기</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+<script>
+(() => {
+  const SUPABASE_URL = 'https://eojwooqtgzokpssgzcuz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_Ds3C-L4umrCGu6NSN1uY3A_BXZEJlZ5'; // 공개용 키 (RLS로 보호)
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
+
+  const COLORS = ['--c1', '--c2', '--c3', '--c4', '--c5', '--c6'];
+  const $ = (id) => document.getElementById(id);
+  let posts = [];
+  let openPostId = null;
+  let adminPw = null;
+
+  // 작성자 삭제 토큰: 이 브라우저에만 저장
+  const store = {
+    get() { try { return JSON.parse(localStorage.getItem('owner_tokens') || '{}'); } catch { return {}; } },
+    set(key, token) { try { const t = store.get(); t[key] = token; localStorage.setItem('owner_tokens', JSON.stringify(t)); } catch {} },
+    del(key) { try { const t = store.get(); delete t[key]; localStorage.setItem('owner_tokens', JSON.stringify(t)); } catch {} },
+  };
+  const newToken = () => crypto.randomUUID() + crypto.randomUUID();
+  try { adminPw = sessionStorage.getItem('admin_pw'); } catch {}
+
+  function colorFor(id) {
+    let h = 0; for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return `var(${COLORS[h % COLORS.length]})`;
+  }
+  function timeAgo(iso) {
+    const s = (Date.now() - new Date(iso)) / 1000;
+    if (s < 60) return '방금';
+    if (s < 3600) return `${Math.floor(s / 60)}분 전`;
+    if (s < 86400) return `${Math.floor(s / 3600)}시간 전`;
+    if (s < 86400 * 7) return `${Math.floor(s / 86400)}일 전`;
+    return new Date(iso).toLocaleDateString('ko-KR');
+  }
+  function el(tag, props = {}, ...kids) {
+    const n = document.createElement(tag);
+    Object.assign(n, props);
+    for (const k of kids) n.append(k);
+    return n;
+  }
+  function setStatus() {
+    $('status').replaceChildren(`고민 ${posts.length}개`);
+    if (adminPw) $('status').append(el('span', { className: 'admin-badge', textContent: '관리자 모드' }));
+    $('adminBtn').textContent = adminPw ? '관리자 모드 끄기' : '관리자';
+  }
+
+  async function loadPosts() {
+    const { data, error } = await sb.from('posts')
+      .select('id, nickname, content, created_at, comments(count)')
+      .order('created_at', { ascending: false });
+    if (error) { $('status').textContent = '불러오지 못했어요. 잠시 후 새로고침해 주세요.'; console.error(error); return; }
+    posts = data;
+    renderWall();
+    if (openPostId) {
+      if (posts.some(p => p.id === openPostId)) renderDetail(); else $('detailDlg').close();
+    }
+  }
+
+  function renderWall() {
+    setStatus();
+    const wall = $('wall');
+    $('empty').hidden = posts.length > 0;
+    wall.replaceChildren(...posts.map(p => {
+      const count = p.comments?.[0]?.count ?? 0;
+      const card = el('button', { type: 'button', className: 'card' },
+        el('div', { className: 'who' }, el('span', { textContent: p.nickname || '익명' }), el('span', { className: 'when', textContent: timeAgo(p.created_at) })),
+        el('div', { className: 'body', textContent: p.content }),
+        el('div', { className: 'foot', textContent: count ? `💬 댓글 ${count}개` : '💬 댓글 달기' }),
+      );
+      card.style.background = colorFor(p.id);
+      card.addEventListener('click', () => openDetail(p.id));
+      return card;
+    }));
+  }
+
+  function deleteButton(kind, id) {
+    const token = store.get()[`${kind}:${id}`];
+    if (!token && !adminPw) return null;
+    const b = el('button', { type: 'button', className: 'btn danger small', textContent: adminPw && !token ? '삭제(관리자)' : '삭제' });
+    b.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (!confirm(kind === 'post' ? '이 고민과 댓글을 모두 지울까요?' : '이 댓글을 지울까요?')) return;
+      b.disabled = true;
+      const { data, error } = await sb.rpc('delete_item', {
+        p_kind: kind, p_id: id, p_token: token || null, p_admin_password: token ? null : adminPw,
+      });
+      if (error || !data) { alert('삭제하지 못했어요.'); b.disabled = false; return; }
+      store.del(`${kind}:${id}`);
+      if (kind === 'post') { openPostId = null; $('detailDlg').close(); }
+      await loadPosts();
+    });
+    return b;
+  }
+
+  async function openDetail(id) {
+    openPostId = id;
+    $('cErr').textContent = '';
+    renderDetail();
+    if (!$('detailDlg').open) $('detailDlg').showModal();
+  }
+
+  async function renderDetail() {
+    const p = posts.find(x => x.id === openPostId);
+    if (!p) return;
+    const box = $('detailPost');
+    box.style.background = colorFor(p.id);
+    const head = el('div', { className: 'row' },
+      el('div', {}, el('b', { textContent: p.nickname || '익명' }), el('span', { className: 'hint', textContent: ' · ' + timeAgo(p.created_at) })));
+    const del = deleteButton('post', p.id);
+    if (del) head.append(del);
+    box.replaceChildren(head, el('div', { className: 'body', textContent: p.content }));
+
+    const { data, error } = await sb.from('comments').select('id, nickname, content, created_at')
+      .eq('post_id', p.id).order('created_at', { ascending: true });
+    if (openPostId !== p.id) return;
+    const list = $('commentList');
+    if (error) { list.replaceChildren(el('li', { className: 'hint', textContent: '댓글을 불러오지 못했어요.' })); return; }
+    list.replaceChildren(...data.map(c => {
+      const meta = el('div', { className: 'meta' },
+        el('div', {}, el('b', { textContent: c.nickname || '익명' }), el('span', { textContent: ' · ' + timeAgo(c.created_at) })));
+      const d = deleteButton('comment', c.id);
+      if (d) meta.append(d);
+      return el('li', {}, meta, el('div', { className: 'text', textContent: c.content }));
+    }));
+  }
+
+  $('newBtn').addEventListener('click', () => { $('newErr').textContent = ''; $('newDlg').showModal(); $('newContent').focus(); });
+  $('newForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = $('newContent').value.trim();
+    if (!content) { $('newErr').textContent = '내용을 적어 주세요.'; return; }
+    $('newSubmit').disabled = true;
+    const token = newToken();
+    const { data, error } = await sb.rpc('create_post', { p_content: content, p_nickname: $('newNick').value, p_token: token });
+    $('newSubmit').disabled = false;
+    if (error) { $('newErr').textContent = '올리지 못했어요. 잠시 후 다시 시도해 주세요.'; console.error(error); return; }
+    store.set(`post:${data}`, token);
+    $('newContent').value = '';
+    $('newDlg').close();
+    await loadPosts();
+  });
+
+  $('commentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = $('cContent').value.trim();
+    if (!content || !openPostId) { $('cErr').textContent = '댓글을 적어 주세요.'; return; }
+    $('cSubmit').disabled = true;
+    const token = newToken();
+    const { data, error } = await sb.rpc('create_comment', { p_post_id: openPostId, p_content: content, p_nickname: $('cNick').value, p_token: token });
+    $('cSubmit').disabled = false;
+    if (error) { $('cErr').textContent = '댓글을 달지 못했어요.'; console.error(error); return; }
+    store.set(`comment:${data}`, token);
+    $('cContent').value = '';
+    $('cErr').textContent = '';
+    await loadPosts();
+  });
+
+  $('adminBtn').addEventListener('click', () => {
+    if (adminPw) {
+      adminPw = null; try { sessionStorage.removeItem('admin_pw'); } catch {}
+      renderWall(); if (openPostId) renderDetail();
+      return;
+    }
+    $('adminErr').textContent = ''; $('adminPw').value = ''; $('adminDlg').showModal();
+  });
+  $('adminForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pw = $('adminPw').value;
+    const { data, error } = await sb.rpc('check_admin', { p_password: pw });
+    if (error || !data) { $('adminErr').textContent = '비밀번호가 맞지 않아요.'; return; }
+    adminPw = pw; try { sessionStorage.setItem('admin_pw', pw); } catch {}
+    $('adminDlg').close();
+    renderWall();
+  });
+
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
+  $('detailDlg').addEventListener('close', () => { openPostId = null; });
+  document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', (e) => { if (e.target === d) d.close(); }));
+
+  // 다른 선생님이 올린 글·댓글 실시간 반영
+  let timer;
+  const refresh = () => { clearTimeout(timer); timer = setTimeout(loadPosts, 300); };
+  sb.channel('board')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, refresh)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, refresh)
+    .subscribe();
+  setInterval(loadPosts, 60000);
+
+  loadPosts();
+})();
+</script>
+</body>
+</html>
